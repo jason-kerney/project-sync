@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>ProjectSync.Types</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="BaseTypes.fs" />
+    <Compile Include="MaybeMonad.fs" />
+    <Compile Include="StringUtils.fs" />
+    <Compile Include="GeneralTypes.fs" />
+    <Compile Include="MaybeList.fs" />
+    <Compile Include="TypeHelpers.fs" />
+    <Compile Include="Possibly.fs" />
+  </ItemGroup>
+
+</Project>

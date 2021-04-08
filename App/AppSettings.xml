@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <appSettings>
+        <!-- These Are Global Overrides -->
+        <!--<add key="sync location" value="." /> -->
+        <!--<add key="azure id config path" value="." /> -->
+        <!--<add key="company name" value="some-company" -->
+        <!--<add key="project name" value="some-project"> -->
+        <!--<add key="token name" value="some-user-name"> -->
+        <!--<add key="token value" value="some-password"> -->
+    </appSettings>
+</configuration>

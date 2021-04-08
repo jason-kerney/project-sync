@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>ProjectSync.Lib</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="FileSystem.fs" />
+    <Compile Include="Printer.fs" />
+    <Compile Include="EnvironmentBuilder.fs" />
+    <Compile Include="RepositoryBuilder.fs" />
+    <Compile Include="RepositoryConfiguration.fs" />
+    <Compile Include="RepositoryApi.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Types\ProjectSync.Types.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="5.0.1" />
+  </ItemGroup>
+
+</Project>
