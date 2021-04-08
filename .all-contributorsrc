@@ -1,0 +1,14 @@
+{
+  "projectName": "project-sync",
+  "projectOwner": "jason-kerney",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    ".\\documents\\contributers.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [],
+  "contributorsPerLine": 7
+}

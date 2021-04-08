@@ -1,29 +1,8 @@
-
-<!-- GENERATED DOCUMENT! DO NOT EDIT! -->
-# Project Sync #
-
-
-## Table Of Contents ##
-
-- [Section 1: Badges](#user-content-badges)
-- [Section 2: Summary](#user-content-summary)
-- [Section 3: Use](#user-content-use)
-- [Section 4: Contributers](#user-content-contributers)
-
-## Badges ##
-![.NET Core](https://github.com/jason-kerney/project-sync/workflows/.NET%20Core/badge.svg)
-[![License](https://img.shields.io/github/license/jason-kerney/project-sync)](https://github.com/jason-kerney/SafeSqlBuilder/blob/main/LICENSE)
-
-    
-
-## Summary ##
-
-A commandline tool to manage local repositories from a corpate Azure git instance.
-
-
-    
-
-## Use ##
+<!--bl
+    (filemeta
+        (title "Use")
+    )
+/bl-->
 
 ### Features
 
@@ -83,22 +62,3 @@ All opions can be controlled via the AppSettings.xml also
     </appSettings>
 </configuration>
 ```
-    
-
-## Contributers ##
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
-    
-
-<!-- GENERATED DOCUMENT! DO NOT EDIT! -->
-    
