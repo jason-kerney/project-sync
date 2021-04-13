@@ -29,8 +29,12 @@ let private queriedAsSelectList (items: _ seq) query =
             let itms = items |> Seq.sort |> Seq.splitInto cnt
             return
                 itms
-                |> Seq.map (fun parts ->
-                    (query, parts)
+                |> Seq.mapi (fun i parts ->
+                    let q = 
+                        if (1 < cnt) then
+                            $"Page %d{i + 1} of %d{cnt}\n%s{query}"
+                        else query
+                    (q, parts)
                     |> Question.Checkbox
                     |> prompt
                 )
