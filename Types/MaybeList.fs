@@ -142,3 +142,16 @@ let simplify (items : _ maybe mlist) : _ mlist =
         let! items = items
         return! items |> flatten
     }
+    
+let join (items : _ mlist seq) : _ mlist =
+    items
+    |> Seq.reduce (fun acc current ->
+            maybe {
+                let! acc_actual = acc
+                let! current_actual = current
+                
+                return
+                    acc_actual
+                    |> List.append current_actual
+            }
+        )

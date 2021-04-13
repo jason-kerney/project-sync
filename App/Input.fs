@@ -24,11 +24,19 @@ let private queriedAsString defaultValue queryPrompt =
 let private queriedAsSelectList (items: _ seq) query =
     maybe {
         if 0 < (items |> Seq.length) then
+            let max = items |> Seq.length
+            let cnt = max / 50 + 1
+            let itms = items |> Seq.sort |> Seq.splitInto cnt
             return
-                (query, items)
-                |> Question.Checkbox
-                |> prompt
-                |> Seq.toList
+                itms
+                |> Seq.map (fun parts ->
+                    (query, parts)
+                    |> Question.Checkbox
+                    |> prompt
+                )
+                |> Seq.concat
+                |> List.ofSeq
+            
         else
             ("No items Available!?!")
             |> Question.Input
