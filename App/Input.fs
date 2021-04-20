@@ -6,6 +6,8 @@ open InquirerCS.Builders
 open InquirerCS.Interfaces
 open InquirerCS.Questions
 
+let private maxItemsPerPage = 35
+
 let private prompt (builder: IBuilder<'Question, 'Result>) =
     builder.Prompt ()
     
@@ -25,7 +27,7 @@ let private queriedAsSelectList (items: _ seq) query =
     maybe {
         if 0 < (items |> Seq.length) then
             let max = items |> Seq.length
-            let cnt = max / 50 + 1
+            let cnt = (max / maxItemsPerPage) + 1
             let itms = items |> Seq.sort |> Seq.splitInto cnt
             return
                 itms
