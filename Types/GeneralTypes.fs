@@ -2,6 +2,8 @@
 module ProjectSync.Types.GeneralTypes
 
 open ProjectSync.Types
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 type Configuration =
     | Configured
@@ -70,7 +72,7 @@ type SyncEnvironment =
         member this.JoinD path childFolder = this.FileSystem.JoinD path childFolder
         member this.MJoinD path childFolder =
             let f = this.FileSystem.JoinD |> lift
-            childFolder ^> f path
+            childFolder /-> f path
             
     interface IPrinter with
         member this.PrintF format = this.Printer.PrintF format

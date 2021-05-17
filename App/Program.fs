@@ -5,6 +5,8 @@ open ProjectSync.App.Arguments
 open ProjectSync.Lib
 open ProjectSync.Types
 open WhatsYourVersion
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfigQuery, versionGetter: IVersionRetriever) =
     let configHelper = ConfigValues.ConfigurationHelper (printer, filesSystem, query)
@@ -58,7 +60,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
             |> ignore
             
     member __.GetAdd (env: SyncEnvironment) configured filter =
-        let filter = filter |> maybeOrDefault "."
+        let filter = filter |> orDefault "."
         let filter = query.QueryAddFilter filter
         let isMatch =
             match filter with
@@ -78,7 +80,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
         }
         
     member __.GetDelete configured filter =
-        let filter = filter |> maybeOrDefault "."
+        let filter = filter |> orDefault "."
         let filter = query.QueryRemoveFilter filter
         let isMatch =
             match filter with
@@ -90,7 +92,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
         let removedRepos =
             configured
             |> MaybeList.filter isMatch
-            |> maybeOrDefault []
+            |> orDefault []
             
         query.QueryRemoveProjects removedRepos
         

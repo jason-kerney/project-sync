@@ -3,6 +3,7 @@
 open ProjectSync.Types
 open System.Diagnostics
 open System.IO
+open Utils.Maybe
 
 let private start (workingDir: string) command args =
     let getOutPut (curProcess: #StreamReader) acc =

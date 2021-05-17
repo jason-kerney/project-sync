@@ -1,7 +1,7 @@
 ﻿[<AutoOpen>]
 module ProjectSync.App.Types
 
-open ProjectSync.Types
+open Utils.Maybe
     
 type GitAttention =
     | NoAction

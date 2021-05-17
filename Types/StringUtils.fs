@@ -2,7 +2,8 @@
 module ProjectSync.Types.StringUtils
 
 open System
-open ProjectSync.Types
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 let splitBy (separators: char[]) (text: string) =
     text.Split (separators, StringSplitOptions.RemoveEmptyEntries)

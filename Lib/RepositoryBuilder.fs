@@ -1,7 +1,7 @@
 ﻿module ProjectSync.Lib.RepositoryBuilder
 
 open ProjectSync.Types
-
+open Utils.Maybe
 let buildRepository (env: SyncEnvironment) configuration name =
     maybe {
         let! syncLocation = env.SyncLocation

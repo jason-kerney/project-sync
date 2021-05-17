@@ -5,6 +5,8 @@ open InquirerCS
 open InquirerCS.Builders
 open InquirerCS.Interfaces
 open InquirerCS.Questions
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 let private maxItemsPerPage = 35
 

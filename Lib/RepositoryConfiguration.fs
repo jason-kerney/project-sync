@@ -2,9 +2,10 @@
 
 open ProjectSync.Types
 open ProjectSync.Lib.FileSystem
+open Utils.Maybe
 
 let repoConfigNameRaw = ".repositories"
-let repoConfigName : Maybe<_> = repoConfigNameRaw |> Ok
+let repoConfigName : maybe<_> = repoConfigNameRaw |> Ok
 
 let private getRepoFile (env: SyncEnvironment) =
     let syncDirectory = env.SyncDirectory

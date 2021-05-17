@@ -2,9 +2,11 @@
 
 open System
 open ProjectSync.Types
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 let idFilenameRaw = ".azureIdentity"
-let idFilename : Maybe<_> = idFilenameRaw |> Ok
+let idFilename : maybe<_> = idFilenameRaw |> Ok
 let companyNameKey = "company"
 let projectNameKey = "project"
 let userNameKey = "tokenName"

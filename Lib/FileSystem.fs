@@ -2,6 +2,8 @@
 
 open System.IO
 open ProjectSync.Types
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 type private ActualFile (path, printer: IPrinter) =
     interface IFileWrapper with
@@ -224,7 +226,7 @@ type private ActualFileSystem (printer) =
             let fs = this.AsFileSystem ()
             let join = fs.JoinD |> lift
             childFolder
-            ^> join root
+            /-> join root
             
     member this.AsFileSystem () = this :> IFileSystemAccessor
     

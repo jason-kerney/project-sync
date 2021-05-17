@@ -7,12 +7,15 @@
 
   <ItemGroup>
     <Compile Include="BaseTypes.fs" />
-    <Compile Include="MaybeMonad.fs" />
     <Compile Include="StringUtils.fs" />
     <Compile Include="GeneralTypes.fs" />
     <Compile Include="MaybeList.fs" />
     <Compile Include="TypeHelpers.fs" />
     <Compile Include="Possibly.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RJK.Maybe" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

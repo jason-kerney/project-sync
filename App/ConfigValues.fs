@@ -3,6 +3,8 @@
 module ConfigValues =
     open ProjectSync.Lib
     open ProjectSync.Types
+    open Utils.Maybe
+    open Utils.Maybe.Maybe
 
     module Helper =
         open ProjectSync.App
@@ -68,7 +70,7 @@ module ConfigValues =
                     
                 member __.QuerySyncLocation defaultLocation =
                     let defaultLocation =
-                        let t = defaultLocation |> maybeOrDefault "."
+                        let t = defaultLocation |> orDefault  "."
                         t |> fs.Directory |> FileSystem.getFullName
                         
                     if defaultLocation |> Ok |> RepositoryConfiguration.repoConfigExists fs then defaultLocation |> Ok

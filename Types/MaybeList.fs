@@ -1,6 +1,8 @@
 ﻿module ProjectSync.Types.MaybeList
 
 open ProjectSync.Types
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 let reduceErrors (items: Maybe<_> seq) =
     let maybeFailures (items: _ list) =
@@ -32,7 +34,11 @@ let filter predicate : _ mlist -> _ mlist =
     |> lift
     
 let sort (list: _ mlist) : _ mlist =
-    List.sort |> lift |> withItM list
+    let sort = 
+        List.sort
+        |> lift
+        
+    list |> sort
 
 let flatten (items: Maybe<_> list) : _ mlist =
     maybe {

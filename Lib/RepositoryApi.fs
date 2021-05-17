@@ -6,12 +6,11 @@ open System.Net.Http.Headers
 open System.Text.Json
 open System.Text.Json.Serialization
 open ProjectSync.Types
+open Utils.Maybe
 
 type ApiRepository = {
     [<JsonPropertyName("name")>]
     Name: string
-//    [<JsonPropertyName("remoteUrl")>]
-//    RemoteUrl: string
 }
 
 type ApiResult = {

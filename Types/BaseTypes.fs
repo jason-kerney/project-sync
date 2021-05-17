@@ -1,13 +1,14 @@
 ﻿namespace ProjectSync.Types
+open Utils.Maybe
 
-type SyncFailure =
-    | ExceptionFailure of exn
-    | GeneralFailure of string
-    | CombinationError of SyncFailure list
+//type SyncFailure =
+//    | ExceptionFailure of exn
+//    | GeneralFailure of string
+//    | CombinationError of SyncFailure list
 
-type Maybe<'Value> = Result<'Value, SyncFailure>
-type mlist<'Value> = Maybe<'Value list>
-type maybe<'Value> = Maybe<'Value>
+//type Maybe<'Value> = Result<'Value, SyncFailure>
+//type mlist<'Value> = Maybe<'Value list>
+//type maybe<'Value> = Maybe<'Value>
 
 [<AutoOpen>]
 module BaseHelpers =
