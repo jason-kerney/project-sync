@@ -1,58 +1,43 @@
 ﻿module ProjectSync.App.Input
 
 open ProjectSync.Types
-open InquirerCS
-open InquirerCS.Builders
-open InquirerCS.Interfaces
-open InquirerCS.Questions
+
 open Utils.Maybe
 open Utils.Maybe.Maybe
+open Spectre.Console
 
 let private maxItemsPerPage = 35
 
-let private prompt (builder: IBuilder<'Question, 'Result>) =
-    builder.Prompt ()
+let private askWithDefault defaultValue prompt : 'T =
+    AnsiConsole.Prompt(
+            TextPrompt<'T>(prompt).DefaultValue(defaultValue)
+        )
     
-let private withDefault defaultValue (builder: InputBuilder<_ Input, _, _>) =
-    builder.WithDefaultValue(defaultValue)
+let private ask prompt : 'T =
+    AnsiConsole.Ask<'T>(prompt)
     
-let private queriedAsString defaultValue queryPrompt =
+let private askWithMultipleChoices prompt choices =
+    let t = MultiSelectionPrompt<string>()
+    t.Title <- prompt
+    t.NotRequired () |> ignore
+    t.PageSize <- 10
+    t.MoreChoicesText <- "[grey](Move [green]up[/] and [green]down[/] to reveal more items)[/]"
+    t.InstructionsText <- "[grey](Press [blue]<space>[/] to toggle an item, [green]<enter>[/] to accept)[/]"
+    t.AddChoices(choices |> Seq.toArray) |> ignore
+    
+    AnsiConsole.Prompt(t)
+    |> Seq.toList
+    
+let private queriedAsString defaultValue queryPrompt : string maybe =
     maybe {
         return 
             queryPrompt
-            |> Question.Input
-            |> withDefault defaultValue
-            |> prompt
+            |> askWithDefault defaultValue
     }
     
 let private queriedAsSelectList (items: _ seq) query =
     maybe {
-        if 0 < (items |> Seq.length) then
-            let max = items |> Seq.length
-            let cnt = (max / maxItemsPerPage) + 1
-            let itms = items |> Seq.sort |> Seq.splitInto cnt
-            return
-                itms
-                |> Seq.mapi (fun i parts ->
-                    let q = 
-                        if (1 < cnt) then
-                            $"Page %d{i + 1} of %d{cnt}\n%s{query}"
-                        else query
-                    (q, parts)
-                    |> Question.Checkbox
-                    |> prompt
-                )
-                |> Seq.concat
-                |> List.ofSeq
-            
-        else
-            ("No items Available!?!")
-            |> Question.Input
-            |> withDefault "Ok"
-            |> prompt
-            |> ignore
-            
-            return []
+        return askWithMultipleChoices query items
     }
     
 let private confirmList items query =
@@ -66,8 +51,7 @@ let private confirmList items query =
     
     maybe {
         return 
-            Question.Confirm query
-            |> prompt
+            AnsiConsole.Confirm query
     }
     |> toBool
     
@@ -89,14 +73,13 @@ let private querySafeString defaultValue predicate generateFailurePrompt queryPr
 let private confirm queryPrompt =
     maybe {
         return
-            (queryPrompt)
-            |> Question.Confirm
-            |> prompt
+            queryPrompt
+            |> AnsiConsole.Confirm
     }
     |> toBool
 
     
-type Query (printer: #IPrinter) =
+type Query (printer: IPrinter) =
     let printEmptyLine () = printer.PrintFn ""
     let handle result =
         printEmptyLine ()

@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="Inquirer.cs" Version="3.0.1" />
+    <PackageReference Include="Spectre.Console" Version="0.39.0" />
     <PackageReference Include="whats-your-version" Version="2.0.0" />
   </ItemGroup>
 
