@@ -8,6 +8,11 @@ let getStringArguments (value: (string * string) option) =
     | Some (switch, v) -> [|switch; v|]
     | _ -> [||]
     
+let getPlainStringArgument(value: string option) =
+    match value with
+    | Some v -> [|v|]
+    | None -> [||]
+    
 let getBoolArguments (value: (string * bool) option) =
     match value with
     | Some (switch, _) -> [|switch|]
@@ -26,7 +31,7 @@ let combineWith values switches  =
     None::combined
     
 let allArguments =
-    let syncPathArgs = ["--target-path"; "--sync-location"; "-tp"] |> combineWith ["my_repo_path"]
+    let syncPathArgs = [Some "my_repo_path"; None]
     let idPathArgs = ["--azure-id-config-path"; "-idp"] |> combineWith ["my_id_path"]
     let companyArgs = ["--company-name"; "-c"] |> combineWith ["my_company_here"]
     let projectArgs = ["--project-name"; "-p"] |> combineWith ["a_project"]
@@ -52,7 +57,7 @@ let allArguments =
                                                 for versionArg in versionArgs do
                                                     yield
                                                         [|
-                                                            syncPathArg |> getStringArguments
+                                                            syncPathArg |> getPlainStringArgument
                                                             idPathArg |> getStringArguments
                                                             companyArg |> getStringArguments
                                                             projectArg |> getStringArguments

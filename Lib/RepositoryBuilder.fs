@@ -2,6 +2,8 @@
 
 open ProjectSync.Types
 open Utils.Maybe
+open Utils.FileSystem.Helpers.FileSystem
+
 let buildRepository (env: SyncEnvironment) configuration name =
     maybe {
         let! syncLocation = env.SyncLocation
@@ -11,7 +13,7 @@ let buildRepository (env: SyncEnvironment) configuration name =
         let exists =
             name
             |> env.JoinD syncLocation
-            |> FileSystem.exists
+            |> exists
             
         let existence =
             if exists

@@ -4,6 +4,8 @@ open System
 open ProjectSync.Types
 open Utils.Maybe
 open Utils.Maybe.Maybe
+open Utils.FileSystem
+open Utils.FileSystem.Helpers
 
 let idFilenameRaw = ".azureIdentity"
 let idFilename : maybe<_> = idFilenameRaw |> Ok
@@ -38,7 +40,7 @@ let private parseConfigFile configLocation (fs: #IFileSystemAccessor) =
     maybe {
         let! file =
             idFilename
-            |> fs.JoinF configLocation
+            |> fs.MJoinF configLocation
             
         let! body = file.ReadAllText ()
         let items =
@@ -105,7 +107,7 @@ let getEnvironment (printer: #IPrinter) (fileSystem: #IFileSystemAccessor) idRoo
     
 let idFileExists (fileSystem: #IFileSystemAccessor) idLocation =
     idFilename
-    |> fileSystem.JoinF idLocation
+    |> fileSystem.MJoinF idLocation
     |> FileSystem.maybeExists
     
 let writeEnvironmentFile (env: SyncEnvironment) idLocation =
@@ -122,7 +124,7 @@ let writeEnvironmentFile (env: SyncEnvironment) idLocation =
     
     let file =
         idFilename
-        |> env.JoinF idLocation 
+        |> env.MJoinF idLocation 
     
     [
         "# A file to allow application access to Azure git repositories" |> Ok
@@ -133,5 +135,5 @@ let writeEnvironmentFile (env: SyncEnvironment) idLocation =
     ]
     |> MaybeList.flatten
     |> mjoin
-    |> FileSystem.maybeWriteAllText file
+    |> maybeWriteAllText file
     

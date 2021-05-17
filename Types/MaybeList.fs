@@ -1,6 +1,5 @@
 ﻿module ProjectSync.Types.MaybeList
 
-open ProjectSync.Types
 open Utils.Maybe
 open Utils.Maybe.Maybe
 

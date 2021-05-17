@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="RJK.FileSystem" Version="1.0.0" />
     <PackageReference Include="RJK.Maybe" Version="1.0.0" />
   </ItemGroup>
 

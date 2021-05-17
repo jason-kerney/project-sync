@@ -7,6 +7,8 @@ open ProjectSync.Types
 open WhatsYourVersion
 open Utils.Maybe
 open Utils.Maybe.Maybe
+open Utils.FileSystem
+open Utils.FileSystem.Builder.Accessor
 
 type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfigQuery, versionGetter: IVersionRetriever) =
     let configHelper = ConfigValues.ConfigurationHelper (printer, filesSystem, query)
@@ -200,11 +202,20 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
 [<EntryPoint>]
 let main argv =
     let printer = Printer.getPrinter ()
-    let fileSystem = FileSystem.getFileSystem printer
+    let printDirectory (dir: IDirectoryWrapper) =
+        dir.FullName
+        |> printer.PrintFn "Deleted: %s"
+        
+    let handler = {
+        BeforeDelete = None
+        AfterDelete = Some printDirectory
+    }
+    
+    let fileSystem = getFileSystem emptyFileEventHandler handler
     let configQuery = ConfigValues.Helper.getConfigQuery printer fileSystem
     
     let assemblyWrapper = AssemblyWrapper.From<IConfigQuery>()
-    let versionGetter = VersionRetriever (assemblyWrapper)
+    let versionGetter = VersionRetriever assemblyWrapper
     
     let runner = Runner (printer, fileSystem, configQuery, versionGetter)
     

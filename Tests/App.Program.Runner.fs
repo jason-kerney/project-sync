@@ -11,6 +11,9 @@ open ProjectSync.Tests
 open ProjectSync.Types
 open WhatsYourVersion
 open NUnit.Framework
+open Utils.FileSystem
+open Utils.Maybe
+open Utils.Maybe.Maybe
 
 type FakeFile (path: string) =
     interface IFileWrapper with
@@ -44,7 +47,7 @@ type FakeFile (path: string) =
             | Ok _ -> Ok ()
             | Error e -> Error e
             
-let getFakeFile path = (path) |> FakeFile :> IFileWrapper
+let getFakeFile path = path |> FakeFile :> IFileWrapper
 
 type FakeDir (path: string) =
     interface IDirectoryWrapper with
@@ -62,28 +65,58 @@ let getFakeDir path = (path) |> FakeDir :> IDirectoryWrapper
 
 type FakeFileSystem () =
     interface IFileSystemAccessor with
+        member __.FullFilePath path = path
         member __.File path = path |> getFakeFile
+        member __.MFile path = path |> lift getFakeFile
+        
+        member __.FullDirectoryPath path = path
         member __.Directory path = path |> getFakeDir
         member __.MDirectory path =
             match path with
             | Ok p -> p |> getFakeDir |> Ok
             | Error e -> Error e
+            
+        member __.JoinFilePath path fileName = $"%s{path}/%s{fileName}"
+        member this.MJoinFilePath path fileName =
+            let accessor = this :> IFileSystemAccessor
+            fileName
+            /-> (lift accessor.JoinFilePath) path
+            
         member __.JoinF path fileName =
+            $"%s{path}/%s{fileName}" |> getFakeFile
+            
+        member this.MJoinF path fileName =
+            let accessor = this :> IFileSystemAccessor
             match path, fileName with
-            | Ok p, Ok fileName -> fileName |> sprintf "%s/%s" p |> getFakeFile |> Ok
+            | Ok path, Ok fileName -> fileName |> accessor.JoinF path |> Ok
             | Error e, Ok _
             | Ok _, Error e -> Error e
             | Error e1, Error e2 -> e1 |> combineWith e2
             
         member __.JoinFD directory fileName =
+            $"%s{directory.FullName}/%s{fileName}" |> getFakeFile
+            
+        member this.MJoinFD (directory: maybe<IDirectoryWrapper>) fileName =
+            let accessor = this :> IFileSystemAccessor
             match directory, fileName with
-            | Ok d, Ok fileName -> fileName |> sprintf "%s/%s" d.FullName |> getFakeFile |> Ok
+            | Ok directory, Ok fileName -> fileName |> accessor.JoinFD directory |> Ok
             | Error e, Ok _
             | Ok _, Error e -> Error e
             | Error e1, Error e2 -> e1 |> combineWith e2
             
         member __.JoinD root childFolder =
             childFolder |> sprintf "%s/%s" root |> getFakeDir
+            
+        member __.JoinDirectoryPath root childFolder =
+            sprintf $"%s{root}/%s{childFolder}"
+            
+        member this.MJoinDirectoryPath root childFolder =
+            let accessor = this :> IFileSystemAccessor
+            match root, childFolder with
+            | Ok root, Ok childFolder -> childFolder |> accessor.JoinDirectoryPath root |> Ok
+            | Error e, Ok _
+            | Ok _, Error e -> Error e
+            | Error e1, Error e2 -> e1 |> combineWith e2
             
         member this.MJoinD root childFolder =
             match root, childFolder with

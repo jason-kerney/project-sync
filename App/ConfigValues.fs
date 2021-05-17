@@ -5,6 +5,8 @@ module ConfigValues =
     open ProjectSync.Types
     open Utils.Maybe
     open Utils.Maybe.Maybe
+    open Utils.FileSystem
+    open Utils.FileSystem.Helpers.FileSystem
 
     module Helper =
         open ProjectSync.App
@@ -49,17 +51,17 @@ module ConfigValues =
                 | Ok v ->
                     v
                     |> fs.Directory
-                    |> FileSystem.getFullName
+                    |> getFullName
                     |> sprintf "%A does not have the ident file. What is the location of your azure identity file?"
                 | Error e -> e |> sprintf "There was an error (%A). What is the location of your azure identity file?"
                 
             interface IConfigQuery with
                 member __.QueryIdLocation defaultLocation =
                     let defaultLocation =
-                        let t = defaultLocation |> fs.MDirectory |> FileSystem.maybeGetFullName
+                        let t = defaultLocation |> fs.MDirectory |> maybeGetFullName
                         match t with
                         | Ok v -> v
-                        | _ -> "." |> fs.Directory |> FileSystem.getFullName
+                        | _ -> "." |> fs.Directory |> getFullName
                         
                     if defaultLocation |> Ok |> EnvironmentBuilder.idFileExists fs then defaultLocation |> Ok
                     else
@@ -71,7 +73,7 @@ module ConfigValues =
                 member __.QuerySyncLocation defaultLocation =
                     let defaultLocation =
                         let t = defaultLocation |> orDefault  "."
-                        t |> fs.Directory |> FileSystem.getFullName
+                        t |> fs.Directory |> getFullName
                         
                     if defaultLocation |> Ok |> RepositoryConfiguration.repoConfigExists fs then defaultLocation |> Ok
                     else
