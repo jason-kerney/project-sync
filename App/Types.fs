@@ -17,11 +17,6 @@ type GitHubUserType =
 type IServiceIdConfigQuery =
     abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe    
     
-type IGithubConfigQuery = 
-    abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe
-    abstract member QueryOrgOrUser : unit -> GitHubUserType maybe
-    abstract member QueryName : GitHubUserType maybe -> string maybe
-    
 type IAzureConfigQuery = 
     abstract member QueryTokenName : unit -> string maybe
     abstract member QueryTokenValue : unit -> string maybe
