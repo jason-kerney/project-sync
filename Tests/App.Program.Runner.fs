@@ -128,8 +128,10 @@ type FakeFileSystem () =
 let getFakeFileSystem () = FakeFileSystem () :> IFileSystemAccessor
 
 type FakeQuery () =
-    interface IAzureConfigQuery with
+    interface IServiceIdConfigQuery with
         member _.QueryIdLocation defaultLocation = "home/idFile" |> Ok
+    
+    interface IAzureConfigQuery with
         member _.QueryTokenName () = "ATokenName" |> Ok
         member _.QueryTokenValue () = "APassword" |> Ok
         member _.QueryCompany () = "ACompany" |> Ok
@@ -142,7 +144,9 @@ type FakeQuery () =
         member _.QueryAddFilter value = value |> Ok
         member _.QueryRemoveFilter value = value |> Ok
         member _.QueryInitRepositories () = false
-        
+
+    member this.ServiceIdConfigQuery
+        with get () = this :> IServiceIdConfigQuery
     member this.AzureConfigQuery
          with get () = this :> IAzureConfigQuery
          
@@ -160,7 +164,7 @@ let getFakeVersion () = FakeVersionGetter ()  :> IVersionRetriever
 [<Test>][<Ignore("Runs to long")>]
 let ``Build all possible environments`` () =
     let fakeQuery = getFakeQuery ()
-    let runner = Runner (getPrinter (), getFakeFileSystem (), fakeQuery.AzureConfigQuery, fakeQuery.RepositoryConfigQuery, getFakeVersion ())
+    let runner = Runner (getPrinter (), getFakeFileSystem (), fakeQuery.ServiceIdConfigQuery,fakeQuery.AzureConfigQuery, fakeQuery.RepositoryConfigQuery, getFakeVersion ())
     let results =
         SampleData.allRuntimeArgs
         |> List.filter (fun (_, r) -> match r with | Run _ -> true | _ -> false)

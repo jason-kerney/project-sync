@@ -9,10 +9,20 @@ type GitAttention =
     | Pull of string
     | Push of string
     | Merge of string
-
+    
+type GitHubUserType =
+    | Org
+    | User
+    
+type IServiceIdConfigQuery =
+    abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe    
+    
+type IGithubConfigQuery = 
+    abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe
+    abstract member QueryOrgOrUser : unit -> GitHubUserType maybe
+    abstract member QueryName : GitHubUserType maybe -> string maybe
     
 type IAzureConfigQuery = 
-    abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe
     abstract member QueryTokenName : unit -> string maybe
     abstract member QueryTokenValue : unit -> string maybe
     abstract member QueryCompany : unit -> string maybe
@@ -35,7 +45,6 @@ let hasValue (thing: string maybe) =
     match thing with
     | Ok v -> 0 < v.Length
     | _ -> false
-        
 
 let prefer (preferred: _ maybe) (other: _ maybe) : _ maybe =
     match preferred, other with

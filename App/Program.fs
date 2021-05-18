@@ -2,7 +2,7 @@ module ProjectSync.App.Program
 
 open System.Text.RegularExpressions
 open ProjectSync.App.Arguments
-open ProjectSync.App.ConfigValues.Helper
+open ProjectSync.App.ConfigValues
 open ProjectSync.Lib
 open ProjectSync.Types
 open WhatsYourVersion
@@ -11,8 +11,8 @@ open Utils.Maybe.Maybe
 open Utils.FileSystem
 open Utils.FileSystem.Builder.Accessor
 
-type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, azureQuery: IAzureConfigQuery, repositoryQuery: IRepositoryConfigQuery, versionGetter: IVersionRetriever) =
-    let configHelper = ConfigValues.ConfigurationHelper (printer, filesSystem, azureQuery, repositoryQuery)
+type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, idLocationQuery: IServiceIdConfigQuery, azureQuery: IAzureConfigQuery, repositoryQuery: IRepositoryConfigQuery, versionGetter: IVersionRetriever) =
+    let configHelper = ConfigurationHelper (printer, filesSystem, idLocationQuery, azureQuery, repositoryQuery)
     
     let safeDelete (printer: IPrinter) (fs: IFileSystemAccessor) (root: string) repository =
         let location = repository.Name |> fs.JoinD root
@@ -220,6 +220,6 @@ let main argv =
     let assemblyWrapper = AssemblyWrapper.From<ConfigQuery>()
     let versionGetter = VersionRetriever assemblyWrapper
     
-    let runner = Runner (printer, fileSystem, configQuery.AzureConfigQuery, configQuery.RepositoryConfigQuery, versionGetter)
+    let runner = Runner (printer, fileSystem, configQuery.ServiceIdConfigQuery, configQuery.AzureConfigQuery, configQuery.RepositoryConfigQuery, versionGetter)
     
     runner.Run argv
