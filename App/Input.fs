@@ -88,21 +88,21 @@ type Query (printer: IPrinter) =
         printEmptyLine ()
         result
     
-    member __.QueriedAsString defaultValue queryPrompt =
+    member _.QueriedAsString defaultValue queryPrompt =
         queriedAsString defaultValue queryPrompt
         |> handle
         
-    member __.QueriedAsSelectList items query =
+    member _.QueriedAsSelectList items query =
         queriedAsSelectList items query
         |> handle
         
-    member __.ConfirmList items query =
+    member _.ConfirmList items query =
         confirmList items query
         |> handle
         
-    member __.QuerySafeString defaultValue predicate generateFailurePrompt queryPrompt =
+    member _.QuerySafeString defaultValue predicate generateFailurePrompt queryPrompt =
         querySafeString defaultValue predicate generateFailurePrompt queryPrompt
         |> handle
         
-    member __.Confirm queryPrompt =
+    member _.Confirm queryPrompt =
         confirm queryPrompt

@@ -17,11 +17,11 @@ open Utils.Maybe.Maybe
 
 type FakeFile (path: string) =
     interface IFileWrapper with
-        member __.FullName with get () = $"file.full({path})"
-        member __.Exists with get () = true
-        member __.Delete () = "FakeFile.Delete" |> NotImplementedException |> raise
-        member __.Path with get () = "FakeFile.Path" |> NotImplementedException |> raise
-        member __.ReadAllText () =
+        member _.FullName with get () = $"file.full({path})"
+        member _.Exists with get () = true
+        member _.Delete () = "FakeFile.Delete" |> NotImplementedException |> raise
+        member _.Path with get () = "FakeFile.Path" |> NotImplementedException |> raise
+        member _.ReadAllText () =
             if path.Contains (RepositoryConfiguration.repoConfigNameRaw) then
                 [
                     $"{path}_Repository_1"
@@ -42,7 +42,7 @@ type FakeFile (path: string) =
                 |> join
                 |> Ok
             else "File doesn't exist ha ha ha" |> asGeneralFailure
-        member __.WriteAllText text =
+        member _.WriteAllText text =
             match text with
             | Ok _ -> Ok ()
             | Error e -> Error e
@@ -51,38 +51,38 @@ let getFakeFile path = path |> FakeFile :> IFileWrapper
 
 type FakeDir (path: string) =
     interface IDirectoryWrapper with
-        member __.FullName with get () = $"dir.full({path})"
-        member __.Exists with get () = true
-        member __.Delete () = "FakeDir.Delete" |> NotImplementedException |> raise
-        member __.Name with get () = path
-        member __.GetFiles filter = $"FakeDir.GetFiles {filter}" |> NotImplementedException |> raise
-        member __.GetFiles () = "FakeDir.GetFiles ()" |> NotImplementedException |> raise
+        member _.FullName with get () = $"dir.full({path})"
+        member _.Exists with get () = true
+        member _.Delete () = "FakeDir.Delete" |> NotImplementedException |> raise
+        member _.Name with get () = path
+        member _.GetFiles filter = $"FakeDir.GetFiles {filter}" |> NotImplementedException |> raise
+        member _.GetFiles () = "FakeDir.GetFiles ()" |> NotImplementedException |> raise
         
-        member __.GetDirectories () = "FakeDir.GetDirectories" |> NotImplementedException |> raise
-        member __.Parent with get () = "FakeDir.Parent" |> NotImplementedException |> raise
+        member _.GetDirectories () = "FakeDir.GetDirectories" |> NotImplementedException |> raise
+        member _.Parent with get () = "FakeDir.Parent" |> NotImplementedException |> raise
         
 let getFakeDir path = (path) |> FakeDir :> IDirectoryWrapper
 
 type FakeFileSystem () =
     interface IFileSystemAccessor with
-        member __.FullFilePath path = path
-        member __.File path = path |> getFakeFile
-        member __.MFile path = path |> lift getFakeFile
+        member _.FullFilePath path = path
+        member _.File path = path |> getFakeFile
+        member _.MFile path = path |> lift getFakeFile
         
-        member __.FullDirectoryPath path = path
-        member __.Directory path = path |> getFakeDir
-        member __.MDirectory path =
+        member _.FullDirectoryPath path = path
+        member _.Directory path = path |> getFakeDir
+        member _.MDirectory path =
             match path with
             | Ok p -> p |> getFakeDir |> Ok
             | Error e -> Error e
             
-        member __.JoinFilePath path fileName = $"%s{path}/%s{fileName}"
+        member _.JoinFilePath path fileName = $"%s{path}/%s{fileName}"
         member this.MJoinFilePath path fileName =
             let accessor = this :> IFileSystemAccessor
             fileName
             /-> (lift accessor.JoinFilePath) path
             
-        member __.JoinF path fileName =
+        member _.JoinF path fileName =
             $"%s{path}/%s{fileName}" |> getFakeFile
             
         member this.MJoinF path fileName =
@@ -93,7 +93,7 @@ type FakeFileSystem () =
             | Ok _, Error e -> Error e
             | Error e1, Error e2 -> e1 |> combineWith e2
             
-        member __.JoinFD directory fileName =
+        member _.JoinFD directory fileName =
             $"%s{directory.FullName}/%s{fileName}" |> getFakeFile
             
         member this.MJoinFD (directory: maybe<IDirectoryWrapper>) fileName =
@@ -104,10 +104,10 @@ type FakeFileSystem () =
             | Ok _, Error e -> Error e
             | Error e1, Error e2 -> e1 |> combineWith e2
             
-        member __.JoinD root childFolder =
+        member _.JoinD root childFolder =
             childFolder |> sprintf "%s/%s" root |> getFakeDir
             
-        member __.JoinDirectoryPath root childFolder =
+        member _.JoinDirectoryPath root childFolder =
             sprintf $"%s{root}/%s{childFolder}"
             
         member this.MJoinDirectoryPath root childFolder =
@@ -128,30 +128,39 @@ type FakeFileSystem () =
 let getFakeFileSystem () = FakeFileSystem () :> IFileSystemAccessor
 
 type FakeQuery () =
-    interface IConfigQuery with
-        member __.QueryIdLocation defaultLocation = "home/idFile" |> Ok
-        member __.QuerySyncLocation defaultLocation = "home/repoFile" |> Ok
-        member __.QueryTokenName () = "ATokenName" |> Ok
-        member __.QueryTokenValue () = "APassword" |> Ok
-        member __.QueryCompany () = "ACompany" |> Ok
-        member __.QueryProject () = "AProject" |> Ok
-        member __.QueryNewProjects values = values |> Ok
-        member __.QueryRemoveProjects values = values |> Ok
-        member __.QueryAddFilter value = value |> Ok
-        member __.QueryRemoveFilter value = value |> Ok
-        member __.QueryInitRepositories () = false
+    interface IAzureConfigQuery with
+        member _.QueryIdLocation defaultLocation = "home/idFile" |> Ok
+        member _.QueryTokenName () = "ATokenName" |> Ok
+        member _.QueryTokenValue () = "APassword" |> Ok
+        member _.QueryCompany () = "ACompany" |> Ok
+        member _.QueryProject () = "AProject" |> Ok
         
-let getFakeQuery () = FakeQuery () :> IConfigQuery
+    interface IRepositoryConfigQuery with
+        member _.QuerySyncLocation defaultLocation = "home/repoFile" |> Ok
+        member _.QueryNewRepositories values = values |> Ok
+        member _.QueryRemoveRepositories values = values |> Ok
+        member _.QueryAddFilter value = value |> Ok
+        member _.QueryRemoveFilter value = value |> Ok
+        member _.QueryInitRepositories () = false
+        
+    member this.AzureConfigQuery
+         with get () = this :> IAzureConfigQuery
+         
+    member this.RepositoryConfigQuery
+        with get () = this :> IRepositoryConfigQuery
+        
+let getFakeQuery () = FakeQuery ()
 
 type FakeVersionGetter () =
     interface IVersionRetriever with
-        member __.GetVersion () = VersionInfo ()
+        member _.GetVersion () = VersionInfo ()
         
 let getFakeVersion () = FakeVersionGetter ()  :> IVersionRetriever
 
 [<Test>][<Ignore("Runs to long")>]
 let ``Build all possible environments`` () =
-    let runner = Runner (getPrinter (), getFakeFileSystem (), getFakeQuery (), getFakeVersion ())
+    let fakeQuery = getFakeQuery ()
+    let runner = Runner (getPrinter (), getFakeFileSystem (), fakeQuery.AzureConfigQuery, fakeQuery.RepositoryConfigQuery, getFakeVersion ())
     let results =
         SampleData.allRuntimeArgs
         |> List.filter (fun (_, r) -> match r with | Run _ -> true | _ -> false)
