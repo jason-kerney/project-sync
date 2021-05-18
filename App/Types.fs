@@ -10,15 +10,18 @@ type GitAttention =
     | Push of string
     | Merge of string
 
-type IConfigQuery =
+    
+type IAzureConfigQuery = 
     abstract member QueryIdLocation : defaultLocation:string maybe -> string maybe
-    abstract member QuerySyncLocation : defaultLocation:string maybe -> string maybe
     abstract member QueryTokenName : unit -> string maybe
     abstract member QueryTokenValue : unit -> string maybe
     abstract member QueryCompany : unit -> string maybe
     abstract member QueryProject : unit -> string maybe
-    abstract member QueryNewProjects : string list -> string mlist
-    abstract member QueryRemoveProjects : string list -> string mlist
+
+type IRepositoryConfigQuery = 
+    abstract member QuerySyncLocation : defaultLocation:string maybe -> string maybe
+    abstract member QueryNewRepositories : string list -> string mlist
+    abstract member QueryRemoveRepositories : string list -> string mlist
     abstract member QueryAddFilter : string -> string maybe
     abstract member QueryRemoveFilter : string -> string maybe
     abstract member QueryInitRepositories : unit -> bool

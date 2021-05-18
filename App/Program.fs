@@ -2,6 +2,7 @@ module ProjectSync.App.Program
 
 open System.Text.RegularExpressions
 open ProjectSync.App.Arguments
+open ProjectSync.App.ConfigValues.Helper
 open ProjectSync.Lib
 open ProjectSync.Types
 open WhatsYourVersion
@@ -10,8 +11,8 @@ open Utils.Maybe.Maybe
 open Utils.FileSystem
 open Utils.FileSystem.Builder.Accessor
 
-type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfigQuery, versionGetter: IVersionRetriever) =
-    let configHelper = ConfigValues.ConfigurationHelper (printer, filesSystem, query)
+type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, azureQuery: IAzureConfigQuery, repositoryQuery: IRepositoryConfigQuery, versionGetter: IVersionRetriever) =
+    let configHelper = ConfigValues.ConfigurationHelper (printer, filesSystem, azureQuery, repositoryQuery)
     
     let safeDelete (printer: IPrinter) (fs: IFileSystemAccessor) (root: string) repository =
         let location = repository.Name |> fs.JoinD root
@@ -21,7 +22,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
             async {
                 return
                     maybe {
-                        return printer.PrintFn "Changes exist: %s" location.FullName
+                        return printer.PrintFn $"Changes exist: %s{location.FullName}"
                     }
             }
         else location.Delete ()
@@ -33,7 +34,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
         | ShowHelp help -> this.Run help
         | ShowVersion ->
             let info = versionGetter.GetVersion()
-            sprintf "Version %s built at %s" info.Version info.BuildDateUtc
+            $"Version %s{info.Version} built at %s{info.BuildDateUtc}"
             |> this.Run 
         | Run args -> this.Run args
         
@@ -54,16 +55,17 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
         this.WriteIdFile env idLocation 
         
         env
-    member __.WriteIdFile (env: SyncEnvironment) idLocation =
+    member _.WriteIdFile (env: SyncEnvironment) idLocation =
         let idFileExists = idLocation |> EnvironmentBuilder.idFileExists env
         
         if idFileExists |> not then 
             EnvironmentBuilder.writeEnvironmentFile env idLocation
             |> ignore
-            
-    member __.GetAdd (env: SyncEnvironment) configured filter =
+           
+    // repository
+    member _.GetAdd (env: SyncEnvironment) configured filter =
         let filter = filter |> orDefault "."
-        let filter = query.QueryAddFilter filter
+        let filter = repositoryQuery.QueryAddFilter filter
         let isMatch =
             match filter with
             | Ok value ->
@@ -78,12 +80,13 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
             
         maybe {
             let! apiRepos = apiRepos
-            return! query.QueryNewProjects apiRepos
+            return! repositoryQuery.QueryNewRepositories apiRepos
         }
         
-    member __.GetDelete configured filter =
+    // repository
+    member _.GetDelete configured filter =
         let filter = filter |> orDefault "."
-        let filter = query.QueryRemoveFilter filter
+        let filter = repositoryQuery.QueryRemoveFilter filter
         let isMatch =
             match filter with
             | Ok value ->
@@ -96,7 +99,7 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
             |> MaybeList.filter isMatch
             |> orDefault []
             
-        query.QueryRemoveProjects removedRepos
+        repositoryQuery.QueryRemoveRepositories removedRepos
         
     member this.Run (arguments: RunTimeArguments) =
         let env = this.GetEnvironment arguments
@@ -191,11 +194,11 @@ type Runner (printer : IPrinter, filesSystem: IFileSystemAccessor, query: IConfi
             env.PrintFn "Done!"
             0
         | _ ->
-            env.PrintFn "\n%A" result
+            env.PrintFn $"\n%A{result}"
             -1
         
-    member __.Run msg =
-        printer.PrintFn "%s" msg
+    member _.Run msg =
+        printer.PrintFn $"%s{msg}"
         0
         
 
@@ -212,11 +215,11 @@ let main argv =
     }
     
     let fileSystem = getFileSystem emptyFileEventHandler handler
-    let configQuery = ConfigValues.Helper.getConfigQuery printer fileSystem
+    let configQuery = getConfigQuery printer fileSystem
     
-    let assemblyWrapper = AssemblyWrapper.From<IConfigQuery>()
+    let assemblyWrapper = AssemblyWrapper.From<ConfigQuery>()
     let versionGetter = VersionRetriever assemblyWrapper
     
-    let runner = Runner (printer, fileSystem, configQuery, versionGetter)
+    let runner = Runner (printer, fileSystem, configQuery.AzureConfigQuery, configQuery.RepositoryConfigQuery, versionGetter)
     
     runner.Run argv

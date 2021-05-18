@@ -25,7 +25,7 @@ let private getRepositories (result : ApiResult) =
     |> List.sort
 
 type RepositoryConnection (env: SyncEnvironment) =
-    member __.GetRepositoryNames () =
+    member _.GetRepositoryNames () =
         use client = new HttpClient ()
     
         maybe {

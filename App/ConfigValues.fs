@@ -18,7 +18,7 @@ module ConfigValues =
         let getValue query value =
             getCheckedValue isOk query value
             
-        type private ConfigQuery (printer: IPrinter, fs: IFileSystemAccessor) =
+        type ConfigQuery (printer: IPrinter, fs: IFileSystemAccessor) =
             let inputQuery = Input.Query (printer)
             let queryUnknownSafeString prompt =
                 let defaultValue = System.String.Empty
@@ -55,8 +55,8 @@ module ConfigValues =
                     |> sprintf "%A does not have the ident file. What is the location of your azure identity file?"
                 | Error e -> e |> sprintf "There was an error (%A). What is the location of your azure identity file?"
                 
-            interface IConfigQuery with
-                member __.QueryIdLocation defaultLocation =
+            interface IAzureConfigQuery with
+                member _.QueryIdLocation defaultLocation =
                     let defaultLocation =
                         let t = defaultLocation |> fs.MDirectory |> maybeGetFullName
                         match t with
@@ -70,7 +70,28 @@ module ConfigValues =
                         "What is the location of your azure identity file?"
                         |> inputQuery.QuerySafeString defaultLocation predicate generateDirectoryFailurePrompt
                     
-                member __.QuerySyncLocation defaultLocation =
+                member _.QueryTokenName () =
+                    "What is the name of the access token to use? (empty to add id file path)"
+                    |> queryUnknownSafeString
+                    
+                member _.QueryTokenValue () =
+                    "What is the value of the generated auth token? (empty to add id file path)"
+                    |> queryUnknownSafeString
+                    
+                member _.QueryCompany () =
+                    "What is the company name used in azure?"
+                    |> queryUnknownSafeString
+                    
+                member _.QueryProject () =
+                    "What is the name of azure project that houses your repositories?"
+                    |> queryUnknownSafeString
+
+            member this.AzureConfigQuery
+                with get() =
+                    this :> IAzureConfigQuery
+                    
+            interface IRepositoryConfigQuery with                    
+                member _.QuerySyncLocation defaultLocation =
                     let defaultLocation =
                         let t = defaultLocation |> orDefault  "."
                         t |> fs.Directory |> getFullName
@@ -81,24 +102,8 @@ module ConfigValues =
                             
                         "What is the location of the repositories"
                         |> inputQuery.QuerySafeString defaultLocation predicate generateDirectoryFailurePrompt
-                    
-                member __.QueryTokenName () =
-                    "What is the name of the access token to use? (empty to add id file path)"
-                    |> queryUnknownSafeString
-                    
-                member __.QueryTokenValue () =
-                    "What is the value of the generated auth token? (empty to add id file path)"
-                    |> queryUnknownSafeString
-                    
-                member __.QueryCompany () =
-                    "What is the company name used in azure?"
-                    |> queryUnknownSafeString
-                    
-                member __.QueryProject () =
-                    "What is the name of azure project that houses your repositories?"
-                    |> queryUnknownSafeString
-                    
-                member __.QueryNewProjects repoNames =
+
+                member _.QueryNewRepositories repoNames =
                     let confirmQuery =
                         if 1 < repoNames.Length then "Synchronize these repositories?"
                         else "Synchronize this repository?"
@@ -106,7 +111,7 @@ module ConfigValues =
                     "Which Repositories to Add?"
                         |> querySafeList repoNames confirmQuery
                     
-                member __.QueryRemoveProjects repoNames =
+                member _.QueryRemoveRepositories repoNames =
                     let confirmQuery =
                         if 1 < repoNames.Length then "Delete these repositories?"
                         else "Delete this repository?"
@@ -114,25 +119,26 @@ module ConfigValues =
                     "Which Repositories to Remove?"
                     |> querySafeList repoNames confirmQuery
                 
-                member __.QueryAddFilter filter =
+                member _.QueryAddFilter filter =
                     "How do you want to limit repository selection for addition (regex)?"
                     |> inputQuery.QueriedAsString filter 
                     
-                member __.QueryRemoveFilter filter =
+                member _.QueryRemoveFilter filter =
                     "How do you want to limit repository selection for removal (regex)?"
                     |> inputQuery.QueriedAsString filter
                     
-                member __.QueryInitRepositories () =
+                member _.QueryInitRepositories () =
                     "Do you wish to create a new repository config?"
                     |> inputQuery.Confirm
+                    
+            member this.RepositoryConfigQuery
+                with get () = this :> IRepositoryConfigQuery
 
-            member this.AsIConfigQuery with get () = this :> IConfigQuery
-            
             
         let getConfigQuery printer fs =
-            (printer, fs) |> ConfigQuery :> IConfigQuery
+            (printer, fs) |> ConfigQuery
         
-        let getToken (configQuery: #IConfigQuery) authToken =
+        let getToken (configQuery: #IAzureConfigQuery) authToken =
             if authToken |> isOk then authToken
             else
                 let tokenName = configQuery.QueryTokenName ()
@@ -147,27 +153,29 @@ module ConfigValues =
             
     open Helper
     
-    type ConfigurationHelper (printer: #IPrinter, fs: #IFileSystemAccessor, query: #IConfigQuery) =
+    type ConfigurationHelper (printer: IPrinter, fs: IFileSystemAccessor, azureQuery: IAzureConfigQuery, repositoryQuery: IRepositoryConfigQuery) =
         let getValueSafely query predicate value =
             if value |> predicate then
                 value
             else query ()
         
-        member __.GetSyncLocation add syncLocation : _ maybe =
+        // repository
+        member _.GetSyncLocation add syncLocation : _ maybe =
             let defaultLocation = "." |> Ok |> prefer syncLocation
             let getLocation () =
-                let query () = defaultLocation |> query.QuerySyncLocation
+                let query () = defaultLocation |> repositoryQuery.QuerySyncLocation
                 let predicate value = value |> RepositoryConfiguration.repoConfigExists fs
                 syncLocation |> getValueSafely query predicate
                 
             if defaultLocation |> RepositoryConfiguration.repoConfigExists fs then defaultLocation
             else
                 if add then
-                    let init = query.QueryInitRepositories ()
+                    let init = repositoryQuery.QueryInitRepositories ()
                     if init then defaultLocation
                     else getLocation ()
                 else  getLocation()
             
+        // Azure
         member this.GetEnvironment idLocation syncLocation company project tokenName token =
             let idLocation = "." |> Ok |> prefer idLocation
             let rec getEnvironment idLocation =
@@ -187,9 +195,9 @@ module ConfigValues =
                         
                 let result =
                     { baseResult with
-                        AuthToken = baseResult.AuthToken |> prefer authToken |> getToken query
-                        Company = baseResult.Company |> prefer company |> getValue query.QueryCompany
-                        Project = baseResult.Project |> prefer project |> getValue query.QueryProject
+                        AuthToken = baseResult.AuthToken |> prefer authToken |> getToken azureQuery
+                        Company = baseResult.Company |> prefer company |> getValue azureQuery.QueryCompany
+                        Project = baseResult.Project |> prefer project |> getValue azureQuery.QueryProject
                         SyncLocation = baseResult.SyncLocation |> prefer syncLocation
                     }
                 
@@ -200,7 +208,7 @@ module ConfigValues =
                     
                 if checks then result
                 else
-                    let idLocation = query.QueryIdLocation idLocation
+                    let idLocation = azureQuery.QueryIdLocation idLocation
                     getEnvironment idLocation
                     
             getEnvironment idLocation
