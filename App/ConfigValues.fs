@@ -99,12 +99,20 @@ module ConfigValues =
                     |> queryUnknownSafeString
                     
                 member __.QueryNewProjects repoNames =
+                    let confirmQuery =
+                        if 1 < repoNames.Length then "Synchronize these repositories?"
+                        else "Synchronize this repository?"
+                        
                     "Which Repositories to Add?"
-                    |> querySafeList repoNames "Synchronize these repositories?"
+                        |> querySafeList repoNames confirmQuery
                     
                 member __.QueryRemoveProjects repoNames =
+                    let confirmQuery =
+                        if 1 < repoNames.Length then "Delete these repositories?"
+                        else "Delete this repository?"
+                        
                     "Which Repositories to Remove?"
-                    |> querySafeList repoNames "Delete these repositories?"
+                    |> querySafeList repoNames confirmQuery
                 
                 member __.QueryAddFilter filter =
                     "How do you want to limit repository selection for addition (regex)?"

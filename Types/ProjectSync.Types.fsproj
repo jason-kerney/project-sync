@@ -9,7 +9,6 @@
     <Compile Include="BaseTypes.fs" />
     <Compile Include="StringUtils.fs" />
     <Compile Include="GeneralTypes.fs" />
-    <Compile Include="MaybeList.fs" />
     <Compile Include="TypeHelpers.fs" />
     <Compile Include="Possibly.fs" />
   </ItemGroup>

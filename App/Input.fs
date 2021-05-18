@@ -9,21 +9,17 @@ open Spectre.Console
 let private maxItemsPerPage = 35
 
 let private askWithDefault defaultValue (prompt: string) : 'T =
-    let prompt = prompt.EscapeMarkup ()
     AnsiConsole.Prompt(
             TextPrompt<'T>(prompt).DefaultValue(defaultValue)
         )
     
 let private ask (prompt: string) : 'T =
-    let prompt = prompt.EscapeMarkup ()
     AnsiConsole.Ask<'T>(prompt)
     
 let private confirmItem (prompt: string) =
-    let prompt = prompt.EscapeMarkup ()
     AnsiConsole.Confirm prompt
     
 let private askWithMultipleChoices (prompt: string) choices =
-    let prompt = prompt.EscapeMarkup ()
     let t = MultiSelectionPrompt<string>()
     t.Title <- prompt
     t.NotRequired () |> ignore
@@ -50,11 +46,11 @@ let private queriedAsSelectList (items: _ seq) query =
 let private confirmList items query =
     let itemsString =
         items
-        |> List.map (sprintf "\t%s")
+        |> List.mapi (fun i v -> $"%d{i}: %s{v}")
         |> join
-        |> sprintf "[\n%s\n]"
+        |> sprintf "%s"
     
-    let query = sprintf "%s %s" itemsString query
+    let query = $"%s{itemsString}\n\t%s{query}"
     
     maybe {
         return 
