@@ -1,10 +1,6 @@
-<!--bl
-    (filemeta
-        (title "Use")
-    )
-/bl-->
+<!-- (dl (section-meta Use)) -->
 
-### Features
+<!-- (dl (# Features)) -->
 
 This tool provides these basic features:
 
@@ -13,7 +9,7 @@ This tool provides these basic features:
 1. Remove local instances of a repository
 1. Easily share a suite of repositories among developers by sharing 1 file.
 
-### Command Line Guide
+<!-- (dl (# Command Line Guide)) -->
 
 ```
 USAGE: ProjectSync.exe [--help] [--sync-location <string>] [--azure-id-config-path <string>] [--company-name <string>]
@@ -45,7 +41,7 @@ OPTIONS:
     --help                display this list of options.
 ```
 
-# AppSettings.xml
+<!-- (dl (# AppSettings.xml)) -->
 All opions can be controlled via the AppSettings.xml also
 
 ```xml

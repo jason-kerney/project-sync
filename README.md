@@ -1,31 +1,31 @@
+<!-- GENERATED DOCUMENT DO NOT EDIT! -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
 
-<!-- GENERATED DOCUMENT! DO NOT EDIT! -->
+<!-- Compiled with doculisp https://www.npmjs.com/package/doculisp -->
+<!-- Written By: Jason Kerney -->
+
 # Project Sync #
 
+## Table of Contents ##
 
-## Table Of Contents ##
-
-- [Section 1: Badges](#user-content-badges)
-- [Section 2: Summary](#user-content-summary)
-- [Section 3: Use](#user-content-use)
-- [Section 4: Contributers](#user-content-contributers)
+1. Section: [Badges](#badges)
+2. Section: [Summary](#summary)
+3. Section: [Use](#use)
+4. Section: [Contributors ✨](#contributors-)
 
 ## Badges ##
+
 ![.NET Core](https://github.com/jason-kerney/project-sync/workflows/.NET%20Core/badge.svg)
 [![License](https://img.shields.io/github/license/jason-kerney/project-sync)](https://github.com/jason-kerney/SafeSqlBuilder/blob/main/LICENSE)
-
-    
 
 ## Summary ##
 
 A commandline tool to manage local repositories from a corpate Azure git instance.
 
-
-    
-
 ## Use ##
 
-### Features
+### Features ###
 
 This tool provides these basic features:
 
@@ -34,7 +34,7 @@ This tool provides these basic features:
 1. Remove local instances of a repository
 1. Easily share a suite of repositories among developers by sharing 1 file.
 
-### Command Line Guide
+### Command Line Guide ###
 
 ```
 USAGE: ProjectSync.exe [--help] [--sync-location <string>] [--azure-id-config-path <string>] [--company-name <string>]
@@ -66,7 +66,8 @@ OPTIONS:
     --help                display this list of options.
 ```
 
-# AppSettings.xml
+### AppSettings.xml ###
+
 All opions can be controlled via the AppSettings.xml also
 
 ```xml
@@ -83,14 +84,11 @@ All opions can be controlled via the AppSettings.xml also
     </appSettings>
 </configuration>
 ```
-    
-## Contributors ✨
+
+## Contributors ✨ ##
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
 <table>
   <tr>
     <td align="center"><a href="https://github.com/edf-re"><img src="https://avatars.githubusercontent.com/u/13739273?v=4?s=100" width="100px;" alt=""/><br /><sub><b>EDF Renewables</b></sub></a><br /><a href="#financial-edf-re" title="Financial">💵</a></td>
@@ -103,13 +101,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
 </table>
 
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+<!-- Written By: Jason Kerney -->
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
-    
-
-<!-- GENERATED DOCUMENT! DO NOT EDIT! -->
-    
+<!-- GENERATED DOCUMENT DO NOT EDIT! -->

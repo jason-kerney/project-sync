@@ -1,0 +1,17 @@
+(section-meta
+    (title Project Sync)
+    (author Jason Kerney)
+    (include
+        (Section ./Badges.md)
+        (Section ./Summary.md)
+        (Section ./Use.md)
+        (Section ./contributers.md)
+    )
+)
+
+(content
+    (toc
+        (label Table of Contents)
+        (style numbered-labeled)
+    )
+)

@@ -1,1 +1,1 @@
-booklisp ./documents/readme.md ./ReadMe.md
+doculisp ./documents/_project.dlproj
